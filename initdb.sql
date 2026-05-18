@@ -85,30 +85,4 @@ CREATE INDEX IF NOT EXISTS idx_user_subscriptions_rzpay ON user_subscriptions(ra
 ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS razorpay_subscription_id VARCHAR UNIQUE;
 ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS razorpay_plan_id VARCHAR;
 ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS subscription_status SMALLINT NOT NULL DEFAULT 0;
-
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM information_schema.columns 
-        WHERE table_name = 'user_subscriptions' 
-          AND column_name = 'subscription_status' 
-          AND data_type = 'character varying'
-    ) THEN
-        ALTER TABLE user_subscriptions ALTER COLUMN subscription_status DROP DEFAULT;
-        ALTER TABLE user_subscriptions ALTER COLUMN subscription_status TYPE SMALLINT USING (
-            CASE subscription_status 
-                WHEN 'inactive' THEN 0 
-                WHEN 'pending' THEN 1 
-                WHEN 'active' THEN 2 
-                WHEN 'cancelled' THEN 3 
-                WHEN 'halted' THEN 4 
-                WHEN 'completed' THEN 5 
-                ELSE 0 
-            END
-        );
-        ALTER TABLE user_subscriptions ALTER COLUMN subscription_status SET DEFAULT 0;
-    END IF;
-END $$;
-
 ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS current_period_end TIMESTAMPTZ;
