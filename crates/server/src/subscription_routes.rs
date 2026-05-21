@@ -24,6 +24,7 @@ pub async fn handle_request(
     let method = req.method().clone();
     match (method, path) {
         (Method::POST, "/subscription/create") => create_subscription_route(req, sd).await,
+        (Method::POST, "/subscription/cancel") => cancel_subscription_route(req, sd).await,
         (Method::GET, "/subscription/status") => status_route(req, sd).await,
         (Method::POST, "/subscription/webhook") => webhook_route(req, sd).await,
         (Method::GET, "/subscription/config") => config_route(req, sd).await,
@@ -220,6 +221,68 @@ async fn create_subscription_route(
     });
 
     Ok(ok_response(response_json.to_string()))
+}
+
+/// POST /subscription/cancel
+async fn cancel_subscription_route(
+    req: Request<Incoming>,
+    sd: Arc<SharedData>,
+) -> Result<Response<Full<Bytes>>, std::convert::Infallible> {
+    let rzp = match &sd.config.razorpay {
+        Some(r) => r,
+        None => {
+            return Ok(build_response(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "Payment integration not configured",
+            ))
+        }
+    };
+
+    let owner = match get_owner(req.headers(), &sd).await {
+        Some(o) => o,
+        None => return Ok(unauthorized_response()),
+    };
+
+    // Get current subscription info
+    let info = match subscription_db::get_subscription_info(&sd.db, &owner).await {
+        Ok(i) => i,
+        Err(e) => {
+            log::error!("get_subscription_info error: {:?}", e);
+            return Ok(internal_error_response());
+        }
+    };
+
+    let sub_id = match info.razorpay_subscription_id {
+        Some(id) if !id.is_empty() => id,
+        _ => return Ok(build_response(StatusCode::BAD_REQUEST, "No active subscription found")),
+    };
+
+    // Call Razorpay to cancel
+    let resp = match sd
+        .http_client
+        .post(format!("{}/subscriptions/{}/cancel", RAZORPAY_API_BASE, sub_id))
+        .basic_auth(&rzp.key_id, Some(&rzp.key_secret))
+        .json(&serde_json::json!({
+            "cancel_at_cycle_end": 0
+        }))
+        .send()
+        .await
+    {
+        Ok(r) => r,
+        Err(e) => {
+            log::error!("Razorpay cancel subscription error: {:?}", e);
+            return Ok(internal_error_response());
+        }
+    };
+
+    if !resp.status().is_success() {
+        let status = resp.status();
+        let text = resp.text().await.unwrap_or_default();
+        log::error!("Razorpay cancel returned {}: {}", status, text);
+        return Ok(build_response(status, text));
+    }
+
+    Ok(ok_response("Subscription cancellation requested"))
 }
 
 /// GET /subscription/status

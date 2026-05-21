@@ -138,6 +138,34 @@ export const Subscription: React.FC = () => {
         }
     };
 
+    const handleCancel = async () => {
+        if (!window.confirm("Are you sure you want to cancel your subscription? Your access to premium features will be removed.")) {
+            return;
+        }
+
+        setSubmitting('cancel');
+        setError(null);
+        try {
+            const headers = await getAuthHeaders();
+            const resp = await fetch(`${API_URL}/subscription/cancel`, {
+                method: 'POST',
+                headers
+            });
+
+            if (!resp.ok) {
+                const text = await resp.text();
+                throw new Error(text || "Failed to cancel subscription");
+            }
+
+            alert("Subscription cancellation requested. It may take a few moments to update.");
+            fetchStatusAndConfig();
+        } catch (e: any) {
+            setError(e.message);
+        } finally {
+            setSubmitting(null);
+        }
+    };
+
     if (!isAuthenticated) {
         return (
             <div className="container animate-fade-in" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
@@ -166,6 +194,16 @@ export const Subscription: React.FC = () => {
                         </span>
                     )}
                 </p>
+                {status?.tier !== 'free' && status?.subscription_status === 'active' && (
+                    <button 
+                        onClick={handleCancel}
+                        disabled={submitting === 'cancel'}
+                        className="secondary-button"
+                        style={{ marginTop: '0.5rem', color: '#ef4444', borderColor: '#ef4444' }}
+                    >
+                        {submitting === 'cancel' ? <Loader2 className="spinner" size={16} /> : 'Cancel Subscription'}
+                    </button>
+                )}
                 {status?.current_period_end && (
                     <p style={{ fontSize: '0.9rem' }} className="text-muted">
                         Renews on: {new Date(status.current_period_end * 1000).toLocaleDateString()}
