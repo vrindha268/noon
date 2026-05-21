@@ -17,6 +17,41 @@ interface SubscriptionConfig {
     team_max_participants: number;
 }
 
+
+
+
+function loadScript(src: string) {
+  const id = "razorpay-checkout-script"
+  if (document.getElementById(id)) {
+    return
+  }
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.id = id
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+}
+
+async function loadRazorpay() {
+  const res = await loadScript(
+    "https://checkout.razorpay.com/v1/checkout.js"
+  );
+
+  if (res) {
+    console.log(`Razorpay SDK loaded`)
+  } else {
+    console.error(`Razorpay SDK failed to load`)
+  }
+}
+
+
 export const Subscription: React.FC = () => {
     const { isAuthenticated, getAuthHeaders, email } = useUnifiedAuth();
     const [status, setStatus] = useState<SubscriptionStatus | null>(null);
@@ -56,6 +91,7 @@ export const Subscription: React.FC = () => {
         setSubmitting(tier);
         setError(null);
         try {
+            const rzpPromise = loadRazorpay()
             const headers = await getAuthHeaders();
             const resp = await fetch(`${API_URL}/subscription/create`, {
                 method: 'POST',
@@ -72,7 +108,7 @@ export const Subscription: React.FC = () => {
             }
 
             const { subscription_id, key_id } = await resp.json();
-
+            await rzpPromise
             const options = {
                 key: key_id,
                 subscription_id: subscription_id,
@@ -80,7 +116,7 @@ export const Subscription: React.FC = () => {
                 description: `Upgrade to ${tier.toUpperCase()} Plan`,
                 handler: function (_response: any) {
                     // Payment successful
-                    alert("Payment successful! Your subscription will be activated shortly.");
+                    // alert("Payment successful! Your subscription will be activated shortly.");
                     fetchStatusAndConfig();
                 },
                 prefill: {
