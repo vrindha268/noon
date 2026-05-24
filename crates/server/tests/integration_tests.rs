@@ -26,6 +26,7 @@ async fn setup_test_server(port: u16) -> String {
             "postgres://postgres:password123@localhost:39222/noondb?sslmode=disable",
         );
         std::env::set_var("EMULATOR_MODE", "true");
+        std::env::set_var("FREE_MAX_FORMS", "1000");
     }
 
     tokio::spawn(async move {
@@ -145,7 +146,14 @@ async fn submit_form_blind(
     let public_key = rsa::RsaPublicKey::new(n, e).expect("Failed to create public key");
 
     // 2. Prepare payload
-    let payload = vec![1, 2, 3, 4]; // Some random payload to sign
+    let submission_bytes = serialize_proto(submission);
+    let nonce = vec![1u8, 2, 3, 4];
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(&submission_bytes);
+    hasher.update(&nonce);
+    let payload = hasher.finalize().to_vec();
+
     let blinded = create_blinded_message(&payload, &public_key);
 
     // 3. Request blind signature
@@ -167,11 +175,11 @@ async fn submit_form_blind(
     let signature = unblind_signature(&blinded, &blinded_sig, &public_key);
 
     // 4. Submit
-    let submission_bytes = serialize_proto(submission);
     let mut blind_sub = BlindSubmission::default();
     blind_sub.payload = Cow::Owned(payload);
     blind_sub.signature = Cow::Owned(signature);
     blind_sub.submission = Cow::Owned(submission_bytes);
+    blind_sub.nonce = Cow::Owned(nonce);
 
     let submit_res = client
         .post(format!("{}/forms/{}/submit", base_url, form_id))

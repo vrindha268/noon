@@ -298,13 +298,18 @@ async fn status_route(
 
     match subscription_db::get_subscription_info(&sd.db, &owner).await {
         Ok(info) => {
+            let effective_tier = if info.subscription_status == subscription_db::SubscriptionStatus::Active {
+                &info.tier
+            } else {
+                "free"
+            };
             let json = serde_json::json!({
                 "owner": info.owner,
                 "tier": info.tier,
                 "subscription_status": info.subscription_status.as_str(),
                 "razorpay_subscription_id": info.razorpay_subscription_id,
                 "current_period_end": info.current_period_end,
-                "max_participants": sd.config.limits.max_participants_for(&info.tier)
+                "max_participants": sd.config.limits.max_participants_for(effective_tier)
             });
             Ok(ok_response(json.to_string()))
         }

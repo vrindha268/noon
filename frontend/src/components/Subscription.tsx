@@ -188,11 +188,15 @@ export const Subscription: React.FC = () => {
                 <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Subscription Plans</h1>
                 <p className="text-muted" style={{ fontSize: '1.1rem' }}>
                     Current Plan: <span style={{ color: 'var(--accent)', fontWeight: 'bold', textTransform: 'capitalize' }}>{status?.tier || 'free'}</span>
-                    {status?.subscription_status === 'active' && (
+                    {status?.subscription_status === 'active' ? (
                         <span style={{ marginLeft: '10px', fontSize: '0.9rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' }}>
                             Active
                         </span>
-                    )}
+                    ) : status?.subscription_status === 'pending' ? (
+                        <span style={{ marginLeft: '10px', fontSize: '0.9rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(234, 179, 8, 0.2)', color: '#eab308' }}>
+                            Pending Payment
+                        </span>
+                    ) : null}
                 </p>
                 {status?.tier !== 'free' && status?.subscription_status === 'active' && (
                     <button 
@@ -264,11 +268,13 @@ export const Subscription: React.FC = () => {
                     </ul>
                     <button 
                         className="primary-button" 
-                        disabled={submitting !== null || status?.tier === 'pro'}
+                        disabled={submitting !== null || (status?.tier === 'pro' && status?.subscription_status === 'active')}
                         onClick={() => handleSubscribe('pro')}
                         style={{ width: '100%' }}
                     >
-                        {submitting === 'pro' ? <Loader2 className="spinner" size={18} /> : (status?.tier === 'pro' ? 'Active' : 'Upgrade to Pro')}
+                        {submitting === 'pro' ? <Loader2 className="spinner" size={18} /> : 
+                         (status?.tier === 'pro' && status?.subscription_status === 'active' ? 'Active' : 
+                          (status?.tier === 'pro' && status?.subscription_status === 'pending' ? 'Complete Payment' : 'Upgrade to Pro'))}
                     </button>
                 </div>
 
@@ -299,11 +305,13 @@ export const Subscription: React.FC = () => {
                     </ul>
                     <button 
                         className="primary-button" 
-                        disabled={submitting !== null || status?.tier === 'team'}
+                        disabled={submitting !== null || (status?.tier === 'team' && status?.subscription_status === 'active')}
                         onClick={() => handleSubscribe('team')}
                         style={{ width: '100%', background: 'var(--text)', color: 'var(--bg)' }}
                     >
-                        {submitting === 'team' ? <Loader2 className="spinner" size={18} /> : (status?.tier === 'team' ? 'Active' : 'Get Team')}
+                        {submitting === 'team' ? <Loader2 className="spinner" size={18} /> : 
+                         (status?.tier === 'team' && status?.subscription_status === 'active' ? 'Active' : 
+                          (status?.tier === 'team' && status?.subscription_status === 'pending' ? 'Complete Payment' : 'Get Team'))}
                     </button>
                 </div>
             </div>

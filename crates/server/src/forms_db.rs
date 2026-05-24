@@ -537,7 +537,7 @@ pub async fn get_form_submissions_count(pool: &Pool, form_id: u64) -> anyhow::Re
     let form_id_i64 = form_id as i64;
     let rows = client
         .query_typed(
-            "SELECT COUNT(*) FROM form_submissions WHERE form_id = $1",
+            "SELECT COUNT(id) FROM form_submissions WHERE form_id = $1",
             &[(&form_id_i64, Type::INT8)],
         )
         .await?;
@@ -549,26 +549,35 @@ pub async fn get_form_submissions_count(pool: &Pool, form_id: u64) -> anyhow::Re
     Ok(count as u64)
 }
 
+use crate::subscription_db::SubscriptionStatus;
+
 pub async fn get_user_subscription_tier(pool: &Pool, owner: &str) -> anyhow::Result<String> {
     let client = pool.get().await?;
     let rows = client
         .query_typed(
-            "SELECT tier FROM user_subscriptions WHERE owner = $1",
+            "SELECT tier, subscription_status FROM user_subscriptions WHERE owner = $1",
             &[(&owner, Type::VARCHAR)],
         )
         .await?;
-    Ok(rows
-        .into_iter()
-        .next()
-        .map(|r| r.get::<_, String>(0))
-        .unwrap_or_else(|| "free".to_string()))
+    
+    if let Some(row) = rows.into_iter().next() {
+        let tier: String = row.get(0);
+        let status_val: i16 = row.get(1);
+        let status = SubscriptionStatus::from_i16(status_val);
+        
+        if status == SubscriptionStatus::Active {
+            return Ok(tier);
+        }
+    }
+    
+    Ok("free".to_string())
 }
 
 pub async fn get_owner_form_count(pool: &Pool, owner: &str) -> anyhow::Result<u64> {
     let client = pool.get().await?;
     let rows = client
         .query_typed(
-            "SELECT COUNT(*) FROM forms WHERE owner = $1",
+            "SELECT COUNT(id) FROM forms WHERE owner = $1",
             &[(&owner, Type::VARCHAR)],
         )
         .await?;
