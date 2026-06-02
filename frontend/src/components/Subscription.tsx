@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUnifiedAuth } from '../auth';
 import { API_URL } from '../config';
 import { Loader2, CheckCircle, CreditCard, ShieldCheck, Zap } from 'lucide-react';
@@ -54,6 +55,7 @@ async function loadRazorpay() {
 
 export const Subscription: React.FC = () => {
     const { isAuthenticated, getAuthHeaders, email } = useUnifiedAuth();
+    const navigate = useNavigate();
     const [status, setStatus] = useState<SubscriptionStatus | null>(null);
     const [config, setConfig] = useState<SubscriptionConfig | null>(null);
     const [loading, setLoading] = useState(true);
@@ -88,6 +90,10 @@ export const Subscription: React.FC = () => {
     }, [isAuthenticated]);
 
     const handleSubscribe = async (tier: 'pro' | 'team') => {
+        if (!isAuthenticated) {
+            navigate('/create?redirect=/subscription');
+            return;
+        }
         setSubmitting(tier);
         setError(null);
         try {
@@ -166,13 +172,7 @@ export const Subscription: React.FC = () => {
         }
     };
 
-    if (!isAuthenticated) {
-        return (
-            <div className="container animate-fade-in" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-                <h2>Please log in to manage your subscription</h2>
-            </div>
-        );
-    }
+
 
     if (loading) {
         return (
@@ -186,31 +186,39 @@ export const Subscription: React.FC = () => {
         <div className="container animate-fade-in" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
             <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Subscription Plans</h1>
-                <p className="text-muted" style={{ fontSize: '1.1rem' }}>
-                    Current Plan: <span style={{ color: 'var(--accent)', fontWeight: 'bold', textTransform: 'capitalize' }}>{status?.tier || 'free'}</span>
-                    {status?.subscription_status === 'active' ? (
-                        <span style={{ marginLeft: '10px', fontSize: '0.9rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' }}>
-                            Active
-                        </span>
-                    ) : status?.subscription_status === 'pending' ? (
-                        <span style={{ marginLeft: '10px', fontSize: '0.9rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(234, 179, 8, 0.2)', color: '#eab308' }}>
-                            Pending Payment
-                        </span>
-                    ) : null}
-                </p>
-                {status?.tier !== 'free' && status?.subscription_status === 'active' && (
-                    <button 
-                        onClick={handleCancel}
-                        disabled={submitting === 'cancel'}
-                        className="secondary-button"
-                        style={{ marginTop: '0.5rem', color: '#ef4444', borderColor: '#ef4444' }}
-                    >
-                        {submitting === 'cancel' ? <Loader2 className="spinner" size={16} /> : 'Cancel Subscription'}
-                    </button>
-                )}
-                {status?.current_period_end && (
-                    <p style={{ fontSize: '0.9rem' }} className="text-muted">
-                        Renews on: {new Date(status.current_period_end * 1000).toLocaleDateString()}
+                {isAuthenticated ? (
+                    <>
+                        <p className="text-muted" style={{ fontSize: '1.1rem' }}>
+                            Current Plan: <span style={{ color: 'var(--accent)', fontWeight: 'bold', textTransform: 'capitalize' }}>{status?.tier || 'free'}</span>
+                            {status?.subscription_status === 'active' ? (
+                                <span style={{ marginLeft: '10px', fontSize: '0.9rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' }}>
+                                    Active
+                                </span>
+                            ) : status?.subscription_status === 'pending' ? (
+                                <span style={{ marginLeft: '10px', fontSize: '0.9rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(234, 179, 8, 0.2)', color: '#eab308' }}>
+                                    Pending Payment
+                                </span>
+                            ) : null}
+                        </p>
+                        {status?.tier !== 'free' && status?.subscription_status === 'active' && (
+                            <button 
+                                onClick={handleCancel}
+                                disabled={submitting === 'cancel'}
+                                className="secondary-button"
+                                style={{ marginTop: '0.5rem', color: '#ef4444', borderColor: '#ef4444' }}
+                            >
+                                {submitting === 'cancel' ? <Loader2 className="spinner" size={16} /> : 'Cancel Subscription'}
+                            </button>
+                        )}
+                        {status?.current_period_end && (
+                            <p style={{ fontSize: '0.9rem' }} className="text-muted">
+                                Renews on: {new Date(status.current_period_end * 1000).toLocaleDateString()}
+                            </p>
+                        )}
+                    </>
+                ) : (
+                    <p className="text-muted" style={{ fontSize: '1.1rem' }}>
+                        Simple, transparent pricing for teams of all sizes.
                     </p>
                 )}
             </div>
