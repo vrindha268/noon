@@ -261,7 +261,13 @@ export const Subscription: React.FC = () => {
                             <h3 style={{ margin: 0 }}>Pro</h3>
                             <Zap size={18} style={{ color: '#eab308' }} />
                         </div>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0.5rem 0' }}>₹499<span style={{ fontSize: '1rem', fontWeight: 'normal' }}>/mo</span></div>
+                        <div style={{ margin: '0.5rem 0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.2rem' }}>
+                                <span style={{ fontSize: '1.1rem', textDecoration: 'line-through', color: 'var(--text-muted)' }}>₹599</span>
+                                <span style={{ fontSize: '0.8rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', fontWeight: 'bold' }}>17% OFF</span>
+                            </div>
+                            <div style={{ fontSize: '2rem', fontWeight: 'bold', lineHeight: '1.2' }}>₹499<span style={{ fontSize: '1rem', fontWeight: 'normal' }}>/mo</span></div>
+                        </div>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1 }}>
                         <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center' }}>
@@ -298,7 +304,13 @@ export const Subscription: React.FC = () => {
                             <h3 style={{ margin: 0 }}>Team</h3>
                             <ShieldCheck size={18} style={{ color: 'var(--accent)' }} />
                         </div>
-                        <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0.5rem 0' }}>₹1,999<span style={{ fontSize: '1rem', fontWeight: 'normal' }}>/mo</span></div>
+                        <div style={{ margin: '0.5rem 0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.2rem' }}>
+                                <span style={{ fontSize: '1.1rem', textDecoration: 'line-through', color: 'var(--text-muted)' }}>₹2,999</span>
+                                <span style={{ fontSize: '0.8rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', fontWeight: 'bold' }}>33% OFF</span>
+                            </div>
+                            <div style={{ fontSize: '2rem', fontWeight: 'bold', lineHeight: '1.2' }}>₹1,999<span style={{ fontSize: '1rem', fontWeight: 'normal' }}>/mo</span></div>
+                        </div>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', flex: 1 }}>
                         <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center' }}>
