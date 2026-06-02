@@ -21,7 +21,6 @@ const PageLoader = () => (
 
 function Home() {
   const [targetId, setTargetId] = useState('');
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useUnifiedAuth();
 
@@ -38,33 +37,6 @@ function Home() {
       }
     }
   };
-
-  const toggleFaq = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
-  const faqs = [
-    {
-      q: "What makes Noon truly anonymous compared to Google Forms or Typeform?",
-      a: "Traditional tools rely on privacy policies and still record your IP address, browser fingerprint, or account token. Noon uses RSA blind signatures—a cryptographic protocol that guarantees your identity is separated from your response before it reaches our servers, making tracking mathematically impossible."
-    },
-    {
-      q: "How do RSA blind signatures work in anonymous feedback forms?",
-      a: "When you submit a form, your browser blinds (encrypts) the response before sending it to the Noon server to be cryptographically signed. The server verifies your permission to submit without seeing the response itself. Your browser then unblinds the signature, resulting in a verified, completely anonymous submission."
-    },
-    {
-      q: "Can Noon admins or developers trace who submitted a response?",
-      a: "No. Due to the mathematical design of RSA blind signatures, it is physically and cryptographically impossible for admins, developers, or even Noon's own servers to link a form response to the IP address or user who sent it."
-    },
-    {
-      q: "Do users need a cryptographic key or technical knowledge to submit feedback?",
-      a: "Not at all. All the complex cryptographic blinding, signing, and verification happen completely in the background in the user's browser. To a user, submitting a Noon form is as simple and fast as filling out any standard online form."
-    },
-    {
-      q: "Is Noon free to use, and is it open source?",
-      a: "Yes, Noon is fully open source under the MIT license, allowing anyone to inspect the cryptographic protocol. The platform offers a generous free tier for secure, anonymous feedback, with premium subscription plans available for advanced form building and team management."
-    }
-  ];
 
   return (
     <div className="home animate-fade-in">
@@ -111,9 +83,44 @@ function Home() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
 
+function About() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const faqs = [
+    {
+      q: "What makes Noon truly anonymous compared to Google Forms or Typeform?",
+      a: "Traditional tools rely on privacy policies and still record your IP address, browser fingerprint, or account token. Noon uses RSA blind signatures—a cryptographic protocol that guarantees your identity is separated from your response before it reaches our servers, making tracking mathematically impossible."
+    },
+    {
+      q: "How do RSA blind signatures work in anonymous feedback forms?",
+      a: "When you submit a form, your browser blinds (encrypts) the response before sending it to the Noon server to be cryptographically signed. The server verifies your permission to submit without seeing the response itself. Your browser then unblinds the signature, resulting in a verified, completely anonymous submission."
+    },
+    {
+      q: "Can Noon admins or developers trace who submitted a response?",
+      a: "No. Due to the mathematical design of RSA blind signatures, it is physically and cryptographically impossible for admins, developers, or even Noon's own servers to link a form response to the IP address or user who sent it."
+    },
+    {
+      q: "Do users need a cryptographic key or technical knowledge to submit feedback?",
+      a: "Not at all. All the complex cryptographic blinding, signing, and verification happen completely in the background in the user's browser. To a user, submitting a Noon form is as simple and fast as filling out any standard online form."
+    },
+    {
+      q: "Is Noon free to use, and is it open source?",
+      a: "Yes, Noon is fully open source under the MIT license, allowing anyone to inspect the cryptographic protocol. The platform offers a generous free tier for secure, anonymous feedback, with premium subscription plans available for advanced form building and team management."
+    }
+  ];
+
+  return (
+    <div className="about-page animate-fade-in" style={{ padding: '2rem 0' }}>
       {/* Cryptographic Differentiator Block (Matching Reference Image) */}
-      <div className="seo-intro-section">
+      <div className="seo-intro-section" style={{ marginTop: 0 }}>
         <div className="intro-container">
           <div className="intro-meta">
             <span className="intro-tagline-main">PRODUCT</span>
@@ -248,6 +255,7 @@ function NavBarContent() {
 
   return (
     <nav className="navbar-nav">
+      <Link to="/about">About</Link>
       <Link to="/dashboard">Dashboard</Link>
       <Link to="/subscription">Pricing</Link>
       <a href="https://github.com/lupyd/noon.git" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center' }} title="View on GitHub">
@@ -301,6 +309,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/index.html" element={<Navigate to="/" replace />} />
+                  <Route path="/about" element={<About />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/create" element={<FormBuilder />} />
                   <Route path="/forms/:id" element={<FormSubmission />} />
