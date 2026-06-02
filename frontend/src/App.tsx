@@ -1,6 +1,6 @@
-import { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
-import { LogOut, Loader2 } from 'lucide-react';
+import { LogOut, Loader2, Lock, MessageSquare, Cpu, ShieldCheck, BarChart3, Key, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { SunLogo } from './components/logo';
 import { UnifiedAuthProvider, useUnifiedAuth } from './auth';
 import { ThemeProvider } from './ThemeContext';
@@ -21,6 +21,7 @@ const PageLoader = () => (
 
 function Home() {
   const [targetId, setTargetId] = useState('');
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useUnifiedAuth();
 
@@ -37,6 +38,33 @@ function Home() {
       }
     }
   };
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const faqs = [
+    {
+      q: "What makes Noon truly anonymous compared to Google Forms or Typeform?",
+      a: "Traditional tools rely on privacy policies and still record your IP address, browser fingerprint, or account token. Noon uses RSA blind signatures—a cryptographic protocol that guarantees your identity is separated from your response before it reaches our servers, making tracking mathematically impossible."
+    },
+    {
+      q: "How do RSA blind signatures work in anonymous feedback forms?",
+      a: "When you submit a form, your browser blinds (encrypts) the response before sending it to the Noon server to be cryptographically signed. The server verifies your permission to submit without seeing the response itself. Your browser then unblinds the signature, resulting in a verified, completely anonymous submission."
+    },
+    {
+      q: "Can Noon admins or developers trace who submitted a response?",
+      a: "No. Due to the mathematical design of RSA blind signatures, it is physically and cryptographically impossible for admins, developers, or even Noon's own servers to link a form response to the IP address or user who sent it."
+    },
+    {
+      q: "Do users need a cryptographic key or technical knowledge to submit feedback?",
+      a: "Not at all. All the complex cryptographic blinding, signing, and verification happen completely in the background in the user's browser. To a user, submitting a Noon form is as simple and fast as filling out any standard online form."
+    },
+    {
+      q: "Is Noon free to use, and is it open source?",
+      a: "Yes, Noon is fully open source under the MIT license, allowing anyone to inspect the cryptographic protocol. The platform offers a generous free tier for secure, anonymous feedback, with premium subscription plans available for advanced form building and team management."
+    }
+  ];
 
   return (
     <div className="home animate-fade-in">
@@ -80,6 +108,134 @@ function Home() {
                 </Link>
               </div>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Cryptographic Differentiator Block (Matching Reference Image) */}
+      <div className="seo-intro-section">
+        <div className="intro-container">
+          <div className="intro-meta">
+            <span className="intro-tagline-main">PRODUCT</span>
+            <h2 className="intro-title">Noon</h2>
+            <p className="intro-subtitle">Anonymous feedback forms — impossible to trace, by design.</p>
+          </div>
+
+          <div className="intro-card-description">
+            <p>
+              Noon lets people share honest feedback without fear. Unlike ordinary anonymous forms that just promise not to track you, Noon uses <strong>RSA blind signatures</strong> — a cryptographic method that makes it mathematically impossible to link a submission back to the person who sent it. Not even us.
+            </p>
+          </div>
+
+          <div className="badges-row">
+            <span className="badge-item badge-cryptographic">
+              <ShieldCheck size={14} /> Cryptographic anonymity
+            </span>
+            <span className="badge-item badge-honest">
+              <BarChart3 size={14} /> Honest feedback
+            </span>
+            <span className="badge-item badge-traceability">
+              <Key size={14} /> Zero traceability
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* WHY IT'S DIFFERENT SECTION (Matching Reference Image) */}
+      <div className="different-section">
+        <h3 className="section-title-uppercase">WHY IT'S DIFFERENT</h3>
+        
+        <div className="different-grid">
+          <div className="different-card">
+            <div className="different-icon-wrapper lock-icon-wrapper">
+              <Lock size={20} />
+            </div>
+            <div className="different-content">
+              <h4>Privacy by math, not policy</h4>
+              <p>Other tools say "we won't track you." Noon says "we can't." RSA blind signatures ensure the server never sees the identity behind a response — even during verification.</p>
+            </div>
+          </div>
+
+          <div className="different-card">
+            <div className="different-icon-wrapper message-icon-wrapper">
+              <MessageSquare size={20} />
+            </div>
+            <div className="different-content">
+              <h4>Real honesty, finally</h4>
+              <p>When people know they truly can't be identified, they speak freely — giving organizations the unfiltered truth they need to actually improve.</p>
+            </div>
+          </div>
+
+          <div className="different-card">
+            <div className="different-icon-wrapper complex-icon-wrapper">
+              <Cpu size={20} />
+            </div>
+            <div className="different-content">
+              <h4>Simple to use, complex under the hood</h4>
+              <p>Submitters fill out a form. Admins get responses. The cryptography happens invisibly in between — no technical knowledge needed on either side.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ SECTION */}
+      <div className="faq-section-landing">
+        <h3 className="section-title-uppercase">FREQUENTLY ASKED QUESTIONS</h3>
+        <div className="faq-list">
+          {faqs.map((faq, index) => (
+            <div key={index} className={`faq-item-card ${openFaq === index ? 'active' : ''}`} onClick={() => toggleFaq(index)}>
+              <div className="faq-question-header">
+                <h5>{faq.q}</h5>
+                <span className="faq-toggle-icon">
+                  {openFaq === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </span>
+              </div>
+              {openFaq === index && (
+                <div className="faq-answer-body">
+                  <p>{faq.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SEO STRATEGY SECTION (Matching Reference Image) */}
+      <div className="seo-strategy-section">
+        <h3 className="section-title-uppercase">SEO STRATEGY</h3>
+        <div className="seo-strategy-card">
+          <div className="seo-strategy-header">
+            <div className="seo-strategy-icon">
+              <Globe size={20} />
+            </div>
+            <h4>Target keywords</h4>
+          </div>
+
+          <div className="keywords-grid">
+            <div className="keyword-item-card">
+              <div className="keyword-name">anonymous feedback forms</div>
+              <div className="keyword-meta">High Intent, core use case</div>
+            </div>
+            <div className="keyword-item-card">
+              <div className="keyword-name">untraceable employee surveys</div>
+              <div className="keyword-meta">B2B, HR teams</div>
+            </div>
+            <div className="keyword-item-card">
+              <div className="keyword-name">truly anonymous survey tool</div>
+              <div className="keyword-meta">Differentiator keyword</div>
+            </div>
+            <div className="keyword-item-card">
+              <div className="keyword-name">blind signature feedback app</div>
+              <div className="keyword-meta">Technical audience</div>
+            </div>
+            <div className="keyword-item-card">
+              <div className="keyword-name">honest workplace feedback</div>
+              <div className="keyword-meta">High volume, culture-driven</div>
+            </div>
+            <div className="keyword-item-card">
+              <div className="keyword-name">secure anonymous forms</div>
+              <div className="keyword-meta">Privacy-conscious users</div>
+            </div>
           </div>
         </div>
       </div>

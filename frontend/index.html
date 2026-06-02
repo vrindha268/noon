@@ -5,30 +5,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
-    content="Noon is a privacy-preserving form submission system that enables anonymous responses while maintaining authenticity verification, powered by blind signature cryptography." />
+    content="Create truly anonymous feedback forms powered by RSA blind signatures. Mathematically untraceable surveys that protect identity by design, not policy." />
   <meta name="keywords"
-    content="anonymous forms, blind signatures, privacy-preserving, secure surveys, cryptography, rust, react, noon, lupyd foundation" />
-  <meta name="author" content="Lupyd Foundation" />
+    content="noon, anonymous feedback forms, untraceable employee surveys, secure anonymous forms, blind signature feedback app, truly anonymous survey tool, privacy-preserving surveys, cryptography, rsa blind signatures" />
+  <meta name="author" content="Noon" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://noon.lupyd.com/" />
-  <meta property="og:title" content="NOON | Truly Anonymous Forms" />
+  <meta property="og:title" content="Noon | Cryptographically Anonymous Feedback & Surveys" />
   <meta property="og:description"
-    content="Privacy-preserving form submission system that enables anonymous responses while maintaining authenticity verification." />
+    content="Create truly anonymous feedback forms powered by RSA blind signatures. Mathematically untraceable surveys that protect identity by design, not policy." />
   <meta property="og:image" content="https://noon.lupyd.com/noon.webp" />
   <meta property="og:site_name" content="Noon" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://noon.lupyd.com/" />
-  <meta property="twitter:title" content="NOON | Truly Anonymous Forms" />
+  <meta property="twitter:title" content="Noon | Cryptographically Anonymous Feedback & Surveys" />
   <meta property="twitter:description"
-    content="Privacy-preserving form submission system that enables anonymous responses while maintaining authenticity verification." />
+    content="Create truly anonymous feedback forms powered by RSA blind signatures. Mathematically untraceable surveys that protect identity by design, not policy." />
   <meta property="twitter:image" content="https://noon.lupyd.com/noon.webp" />
 
   <link id="favicon" rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
-  <title>NOON | Truly Anonymous Forms</title>
+  <title>Noon | Cryptographically Anonymous Feedback & Surveys</title>
 
   <!-- Link CSS asynchronously to avoid blocking the critical path -->
   <link rel="preload" href="/src/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -58,6 +58,56 @@
       min-height: 100vh;
     }
   </style>
+
+  <!-- Structured Data / JSON-LD FAQ Schema -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What makes Noon truly anonymous compared to Google Forms or Typeform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Traditional tools rely on privacy policies and still record your IP address, browser fingerprint, or account token. Noon uses RSA blind signatures—a cryptographic protocol that guarantees your identity is separated from your response before it reaches our servers, making tracking mathematically impossible."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do RSA blind signatures work in anonymous feedback forms?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "When you submit a form, your browser blinds (encrypts) the response before sending it to the Noon server to be cryptographically signed. The server verifies your permission to submit without seeing the response itself. Your browser then unblinds the signature, resulting in a verified, completely anonymous submission."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can Noon admins or developers trace who submitted a response?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Due to the mathematical design of RSA blind signatures, it is physically and cryptographically impossible for admins, developers, or even Noon's own servers to link a form response to the IP address or user who sent it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do users need a cryptographic key or technical knowledge to submit feedback?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not at all. All the complex cryptographic blinding, signing, and verification happen completely in the background in the user's browser. To a user, submitting a Noon form is as simple and fast as filling out any standard online form."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Noon free to use, and is it open source?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Noon is fully open source under the MIT license, allowing anyone to inspect the cryptographic protocol. The platform offers a generous free tier for secure, anonymous feedback, with premium subscription plans available for advanced form building and team management."
+          }
+        }
+      ]
+    }
+  </script>
 </head>
 
 <body>
